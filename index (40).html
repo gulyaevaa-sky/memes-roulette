@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Мем-Рулетка 🤡</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:    #0f0f13;
+      --card:  #16161e;
+      --imgbg: #0c0c10;
+      --p1:    #7c3aed;
+      --p2:    #a855f7;
+      --p3:    #c084fc;
+      --t1:    #f0f0f0;
+      --t2:    #9ca3af;
+      --t3:    #6b7280;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse 80% 40% at 50% 0%,
+          rgba(139,92,246,.08) 0%, transparent 68%);
+      color: var(--t1);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px 64px;
+    }
+
+    /* ── Header ── */
+    header { text-align: center; margin-bottom: 32px; }
+
+    .logo {
+      display: block;
+      font-size: 54px;
+      line-height: 1;
+      margin-bottom: 14px;
+      animation: float 3.5s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50%       { transform: translateY(-8px) rotate(3deg); }
+    }
+
+    header h1 {
+      font-size: clamp(26px, 6vw, 40px);
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      background: linear-gradient(130deg, #e0d7ff 0%, var(--p3) 50%, var(--p2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    header p { color: var(--t3); font-size: 14px; }
+
+    /* ── Card ── */
+    .card {
+      width: 100%;
+      max-width: 640px;
+      background: var(--card);
+      border-radius: 24px;
+      border: 1px solid rgba(139,92,246,.18);
+      box-shadow:
+        0 0 0 1px rgba(139,92,246,.07),
+        0 24px 64px rgba(0,0,0,.55),
+        0 0 50px rgba(139,92,246,.07);
+      overflow: hidden;
+      margin-bottom: 24px;
+      transition: transform .35s ease, box-shadow .35s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow:
+        0 0 0 1px rgba(139,92,246,.28),
+        0 28px 72px rgba(0,0,0,.6),
+        0 0 70px rgba(139,92,246,.14);
+    }
+
+    /* ── Image area ── */
+    .img-area {
+      position: relative;
+      height: 420px;
+      background: var(--imgbg);
+      overflow: hidden;
+    }
+
+    .meme-img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+    }
+
+    .meme-img.visible {
+      animation: revealMeme .48s cubic-bezier(.22,1,.36,1) forwards;
+    }
+
+    @keyframes revealMeme {
+      from { opacity: 0; filter: blur(12px); transform: scale(.95); }
+      to   { opacity: 1; filter: blur(0px);  transform: scale(1); }
+    }
+
+    /* ── Overlays ── */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: rgba(12,12,16,.9);
+      backdrop-filter: blur(8px);
+      transition: opacity .28s ease;
+    }
+
+    .overlay.gone { opacity: 0; pointer-events: none; }
+
+    /* Spinner ring */
+    .spin-ring {
+      width: 58px;
+      height: 58px;
+      position: relative;
+    }
+
+    .spin-ring::before,
+    .spin-ring::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+    }
+
+    .spin-ring::before {
+      border: 3px solid rgba(139,92,246,.14);
+    }
+
+    .spin-ring::after {
+      border: 3px solid transparent;
+      border-top-color: var(--p2);
+      border-right-color: var(--p3);
+      animation: spin .78s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .ov-label {
+      color: var(--t3);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .err-emoji { font-size: 46px; }
+
+    .err-msg {
+      color: var(--t2);
+      font-size: 14px;
+      text-align: center;
+      line-height: 1.7;
+    }
+
+    /* ── Card footer ── */
+    .card-footer {
+      padding: 18px 22px 20px;
+      border-top: 1px solid rgba(255,255,255,.04);
+    }
+
+    .meme-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--t1);
+      line-height: 1.5;
+      margin-bottom: 12px;
+      min-height: 23px;
+    }
+
+    .meme-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 11px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .pill-jr {
+      background: rgba(139,92,246,.12);
+      border: 1px solid rgba(139,92,246,.3);
+      color: var(--p3);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background .15s ease, border-color .15s ease;
+    }
+
+    .pill-jr:hover {
+      background: rgba(139,92,246,.22);
+      border-color: rgba(139,92,246,.5);
+    }
+
+    .pill-date {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1);
+      color: var(--t3);
+    }
+
+    /* ── Button ── */
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 17px 50px;
+      font-family: 'Inter', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, var(--p1) 0%, var(--p2) 100%);
+      border: none;
+      border-radius: 100px;
+      cursor: pointer;
+      user-select: none;
+      letter-spacing: .01em;
+      transition: transform .2s ease, box-shadow .2s ease;
+      box-shadow:
+        0 0 28px rgba(139,92,246,.52),
+        0 4px 24px rgba(0,0,0,.42),
+        inset 0 1px 0 rgba(255,255,255,.15);
+      overflow: hidden;
+    }
+
+    /* Shine sweep */
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -80%;
+      width: 55%;
+      height: 200%;
+      background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.22) 50%, transparent 62%);
+      transition: left .48s ease;
+      pointer-events: none;
+    }
+
+    .btn:hover:not(:disabled)::after  { left: 125%; }
+
+    .btn:hover:not(:disabled) {
+      transform: scale(1.05) translateY(-2px);
+      box-shadow:
+        0 0 45px rgba(139,92,246,.72),
+        0 8px 32px rgba(0,0,0,.5),
+        inset 0 1px 0 rgba(255,255,255,.15);
+    }
+
+    .btn:active:not(:disabled) { transform: scale(.97) translateY(0); }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: .6;
+    }
+
+    /* Button mini-spinner */
+    .btn-ring {
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .65s linear infinite;
+      display: none;
+      flex-shrink: 0;
+    }
+
+    .btn.loading .btn-ring { display: block; }
+    .btn.loading .btn-dice { display: none; }
+
+    /* ── Site footer ── */
+    footer {
+      margin-top: 26px;
+      color: var(--t3);
+      font-size: 12px;
+      text-align: center;
+      line-height: 1.9;
+    }
+
+    footer a { color: rgba(139,92,246,.75); text-decoration: none; }
+    footer a:hover { color: var(--p3); }
+
+    /* ── Responsive ── */
+    @media (max-width: 500px) {
+      body { padding: 28px 14px 48px; }
+      .img-area { height: 300px; }
+      .btn { padding: 15px 36px; font-size: 15px; }
+      .card-footer { padding: 14px 16px 16px; }
+    }
+
+    /* Accessibility: respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .logo { animation: none; }
+      .meme-img.visible { animation: none; opacity: 1; }
+      .btn::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="logo">🤡</span>
+  <h1>Мем-Рулетка</h1>
+  <p>Случайные посты прямиком с Джойреактора</p>
+</header>
+
+<div class="card">
+  <div class="img-area" id="imgArea">
+
+    <!-- Meme image (hidden until loaded) -->
+    <img class="meme-img" id="memeImg" alt="мем" />
+
+    <!-- Loading overlay -->
+    <div class="overlay" id="spinnerOv">
+      <div class="spin-ring"></div>
+      <span class="ov-label">Ищем мем…</span>
+    </div>
+
+    <!-- Error overlay -->
+    <div class="overlay gone" id="errorOv">
+      <span class="err-emoji">😵</span>
+      <p class="err-msg" id="errMsg">Что-то пошло не так<br>Попробуй ещё раз</p>
+    </div>
+
+  </div>
+
+  <div class="card-footer">
+    <div class="meme-title" id="memeTitle">&nbsp;</div>
+    <div class="meme-meta" id="memeMeta" hidden>
+      <a class="pill pill-jr" id="postLink" href="#" target="_blank" rel="noopener">
+        🔗 Открыть на Джойреакторе
+      </a>
+      <span class="pill pill-date" id="postDate"></span>
+    </div>
+  </div>
+</div>
+
+<button class="btn loading" id="mainBtn" onclick="loadMeme()">
+  <span class="btn-ring"></span>
+  <span class="btn-dice">🎲</span>
+  <span id="btnLabel">Крутить рулетку</span>
+</button>
+
+<footer>
+  Посты с <a href="https://joyreactor.cc" target="_blank" rel="noopener">joyreactor.cc</a>
+  через RSS → rss2json.com
+</footer>
+
+<script>
+  // ── Joyreactor RSS через CORS-прокси rss2json ──
+  // Фидов несколько: попадаются посты из разных подсекций
+  const FEEDS = [
+    'https://joyreactor.cc/rss',
+    'https://joyreactor.cc/tag/%D1%8E%D0%BC%D0%BE%D1%80/rss',   // юмор
+    'https://joyreactor.cc/tag/%D0%BC%D0%B5%D0%BC%D1%8B/rss',   // мемы
+  ];
+
+  const RSS2JSON = 'https://api.rss2json.com/v1/api.json';
+
+  const btn       = document.getElementById('mainBtn');
+  const btnLabel  = document.getElementById('btnLabel');
+  const memeImg   = document.getElementById('memeImg');
+  const memeTitle = document.getElementById('memeTitle');
+  const memeMeta  = document.getElementById('memeMeta');
+  const postLink  = document.getElementById('postLink');
+  const postDate  = document.getElementById('postDate');
+  const spinnerOv = document.getElementById('spinnerOv');
+  const errorOv   = document.getElementById('errorOv');
+  const errMsg    = document.getElementById('errMsg');
+
+  let queue = [];   // закешированные посты
+  let busy  = false;
+
+  // ── Хелперы состояния ──
+
+  function setLoading(on) {
+    busy = on;
+    btn.disabled = on;
+    btn.classList.toggle('loading', on);
+    btnLabel.textContent = on ? 'Загружаю…' : 'Крутить рулетку';
+    if (on) {
+      memeImg.classList.remove('visible');
+      spinnerOv.classList.remove('gone');
+      errorOv.classList.add('gone');
+    }
+  }
+
+  function showError(msg) {
+    spinnerOv.classList.add('gone');
+    errorOv.classList.remove('gone');
+    errMsg.innerHTML = msg;
+    busy = false;
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btnLabel.textContent = 'Крутить рулетку';
+  }
+
+  // ── Парсинг ──
+
+  /** Достаём первую картинку из RSS-item разными способами */
+  function extractImage(item) {
+    // 1. rss2json сам вытащил thumbnail из <description>
+    if (item.thumbnail && /^https?:\/\//i.test(item.thumbnail)) {
+      return item.thumbnail;
+    }
+
+    // 2. Парсим HTML description/content
+    const html = item.description || item.content || '';
+    if (html) {
+      const div = document.createElement('div');
+      div.innerHTML = html;
+
+      for (const img of div.querySelectorAll('img')) {
+        const src = img.getAttribute('src')
+                 || img.getAttribute('data-src')
+                 || img.getAttribute('data-original');
+        if (src && /^https?:\/\//i.test(src)) return src;
+      }
+
+      // 3. Regex-фолбэк на случай если DOM-парсер не помог
+      const m = html.match(/(?:src|data-src)=["'](https?:\/\/[^"'\s]+\.(?:jpg|jpeg|png|gif|webp)[^"']*)/i);
+      if (m) return m[1];
+    }
+
+    return null;
+  }
+
+  /** Форматируем дату поста */
+  function fmtDate(str) {
+    try {
+      return new Date(str).toLocaleDateString('ru-RU', {
+        day: 'numeric', month: 'short', year: 'numeric'
+      });
+    } catch { return ''; }
+  }
+
+  /** Перемешиваем массив (Fisher-Yates) */
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // ── Загрузка пачки постов ──
+
+  async function fetchBatch() {
+    // Случайный фид из списка
+    const feedUrl = FEEDS[Math.floor(Math.random() * FEEDS.length)];
+    const url = `${RSS2JSON}?rss_url=${encodeURIComponent(feedUrl)}&count=30`;
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`rss2json HTTP ${res.status}`);
+
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error(`rss2json: ${data.message || 'error'}`);
+
+    // Оставляем только посты с картинками
+    const posts = data.items
+      .map(item => {
+        const imageUrl = extractImage(item);
+        if (!imageUrl) return null;
+        return {
+          title:   item.title   || 'Без названия',
+          url:     imageUrl,
+          link:    item.link    || 'https://joyreactor.cc',
+          date:    item.pubDate || '',
+        };
+      })
+      .filter(Boolean);
+
+    if (posts.length === 0) throw new Error('Нет постов с изображениями');
+
+    return shuffle(posts);
+  }
+
+  /** Берём следующий пост из очереди, при необходимости перезагружаем */
+  async function nextPost() {
+    if (queue.length === 0) {
+      queue = await fetchBatch();
+    }
+    return queue.pop();
+  }
+
+  // ── Отображение ──
+
+  function showMeme(post) {
+    const tmp = new Image();
+    // Некоторые CDN Джойреактора требуют referrer — ставим crossOrigin anonymous
+    tmp.crossOrigin = 'anonymous';
+
+    tmp.onload = () => {
+      memeImg.src = tmp.src;
+      memeTitle.textContent = post.title;
+      postLink.href = post.link;
+      postDate.textContent  = fmtDate(post.date);
+      memeMeta.hidden = false;
+
+      spinnerOv.classList.add('gone');
+      errorOv.classList.add('gone');
+
+      void memeImg.offsetWidth; // force reflow → CSS animation сработает заново
+      memeImg.classList.add('visible');
+
+      setLoading(false);
+    };
+
+    tmp.onerror = () => {
+      // Картинка не загрузилась — пробуем следующую из очереди
+      console.warn('[Мем-Рулетка] image failed:', tmp.src);
+      if (queue.length > 0) {
+        showMeme(queue.pop());
+      } else {
+        showError('Не удалось загрузить картинку 🖼<br>Попробуй ещё раз');
+      }
+    };
+
+    tmp.src = post.url;
+  }
+
+  // ── Основной обработчик ──
+
+  async function loadMeme() {
+    if (busy) return;
+    setLoading(true);
+
+    try {
+      const post = await nextPost();
+      showMeme(post);
+    } catch (e) {
+      console.error('[Мем-Рулетка]', e);
+      showError(
+        'Не удалось загрузить мем 😵<br>' +
+        '<span style="font-size:11px;opacity:.7">' +
+          'rss2json.com недоступен или Джойреактор не отвечает' +
+        '</span>'
+      );
+    }
+  }
+
+  /* Автозагрузка первого мема */
+  loadMeme();
+</script>
+
+</body>
+</html>
